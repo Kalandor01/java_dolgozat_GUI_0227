@@ -11,31 +11,36 @@ public class FileBeolvasas {
     private static final String FILE_LINE_SEP = ";";
     private static final String FILE_PATH = "emberek.txt";
     
-    public List<Dolgozo> Beolvas() throws FileNotFoundException
+    public static List<Dolgozo> beolvas()
     {
         var file = new File(FILE_PATH);
-        var sc = new Scanner(file);
-        if (sc.hasNextLine())
+        try
         {
-            sc.nextLine();
-        }
-        var dolgozok = new ArrayList<Dolgozo>();
-        while (sc.hasNextLine())
-        {
-            String line = sc.nextLine();
-            var lineSplit = line.split(FILE_LINE_SEP);
-            String name = lineSplit[0];
-            int age = Integer.parseInt(lineSplit[1]);
-            char gender = lineSplit[2].charAt(0);
-            int hoursWorked = 0;
-            if (lineSplit.length > 3)
+            var sc = new Scanner(file);
+            if (sc.hasNextLine())
             {
-                hoursWorked = Integer.parseInt(lineSplit[3]);
+                sc.nextLine();
             }
-            dolgozok.add(new Dolgozo(name, age, gender, hoursWorked));
+            var dolgozok = new ArrayList<Dolgozo>();
+            while (sc.hasNextLine())
+            {
+                String line = sc.nextLine();
+                var lineSplit = line.split(FILE_LINE_SEP);
+                String name = lineSplit[0];
+                int age = Integer.parseInt(lineSplit[1]);
+                char gender = lineSplit[2].charAt(0);
+                int hoursWorked = 0;
+                if (lineSplit.length > 3)
+                {
+                    hoursWorked = Integer.parseInt(lineSplit[3]);
+                }
+                dolgozok.add(new Dolgozo(name, age, gender, hoursWorked));
+            }
+            return dolgozok;
         }
-        return dolgozok;
+        catch (FileNotFoundException e)
+        {
+            return null;
+        }
     }
-    
-    
 }

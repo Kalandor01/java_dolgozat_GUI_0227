@@ -2,17 +2,72 @@
  */
 package view;
 
+import java.util.ArrayList;
+import java.util.List;
+import model.Dolgozo;
+import model.FileBeolvasas;
+
 /**
  *
  * @author rohovszky.akos
  */
 public class Dolgozok extends javax.swing.JFrame {
 
+    private static final char GENDER_GIRL = 'L';
+    private static final char GENDER_BOY = 'F';
+    private static final char GENDER_ALL = '*';
+    
+    private static final String DEF_LABEL_OLDEST = "legidősebb:";
+    private static final String DEF_LABEL_SUM_AGE = "összes kor:";
+    private static final String DEF_LABEL_OLD_WORKER = "6 éve dolgozó:";
+    
+    private static final String DEF_LABEL_STATUS_AGE = "kor:";
+    private static final String DEF_LABEL_STATUS_HOURS_WORKED = "mióta dolgozik:";
+    
+    private List<Dolgozo> dolgozok;
+    
     /**
      * Creates new form Dolgozok
      */
     public Dolgozok() {
         initComponents();
+        this.dolgozok = FileBeolvasas.beolvas();
+        uddateGenderLists();
+    }
+    
+    private List<Dolgozo> getDolgozok(char gender)
+    {
+        List<Dolgozo> dolg = new ArrayList<>();
+        for (Dolgozo dolgozo : dolgozok) {
+            if (dolgozo.getGender() == gender)
+            {
+                dolg.add(dolgozo);
+            }
+        }
+        return dolg;
+    }
+    
+    private List<String> getDolgozoNames(char gender)
+    {
+        List<String> names = new ArrayList<>();
+        for (Dolgozo dolgozo : dolgozok) {
+            if (gender == '*' || dolgozo.getGender() == gender)
+            {
+                names.add(dolgozo.getName());
+            }
+        }
+        return names;
+    }
+    
+    private void uddateGenderLists() {
+        var dolgBoys = getDolgozoNames(GENDER_BOY);
+        var dolgGirls = getDolgozoNames(GENDER_GIRL);
+        for (String dolgGirl : dolgGirls) {
+            comboBoxGirls.addItem(dolgGirl);
+        }
+        for (String dolgBoy : dolgBoys) {
+            comboBoxBoys.addItem(dolgBoy);
+        }
     }
 
     /**
@@ -25,33 +80,38 @@ public class Dolgozok extends javax.swing.JFrame {
     private void initComponents() {
 
         nemek = new javax.swing.ButtonGroup();
-        jButton1 = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        buttonSave = new javax.swing.JButton();
+        checkBoxAllGnders = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        radioButtonGirl = new javax.swing.JRadioButton();
+        radioButtonBoy = new javax.swing.JRadioButton();
+        labelOldest = new javax.swing.JLabel();
+        labelSumAge = new javax.swing.JLabel();
+        labelOldWorker = new javax.swing.JLabel();
+        labelStatusAge = new javax.swing.JLabel();
+        labelStatusWorkHours = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        comboBoxGirls = new javax.swing.JComboBox<>();
+        comboBoxBoys = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Dolgozók");
 
-        jButton1.setText("Ment");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        buttonSave.setText("Ment");
+        buttonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                buttonSaveActionPerformed(evt);
             }
         });
 
-        jCheckBox1.setText("Mindkettő nem");
+        checkBoxAllGnders.setText("Mindkettő nem");
+        checkBoxAllGnders.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkBoxAllGndersActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Lányok");
 
@@ -59,28 +119,45 @@ public class Dolgozok extends javax.swing.JFrame {
 
         jLabel3.setText("Összesítő");
 
-        nemek.add(jRadioButton1);
-        jRadioButton1.setText("lány");
-
-        nemek.add(jRadioButton2);
-        jRadioButton2.setText("fiú");
-        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+        nemek.add(radioButtonGirl);
+        radioButtonGirl.setText("lány");
+        radioButtonGirl.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton2ActionPerformed(evt);
+                radioButtonGirlActionPerformed(evt);
             }
         });
 
-        jLabel4.setText("legidősebb:");
+        nemek.add(radioButtonBoy);
+        radioButtonBoy.setText("fiú");
+        radioButtonBoy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                radioButtonBoyActionPerformed(evt);
+            }
+        });
 
-        jLabel5.setText("összes kor:");
+        labelOldest.setText("legidősebb:");
 
-        jLabel6.setText("6 éve dolgozó:");
+        labelSumAge.setText("összes kor:");
 
-        jLabel7.setText("kor:");
+        labelOldWorker.setText("6 éve dolgozó:");
 
-        jLabel8.setText("mióta dolgozik:");
+        labelStatusAge.setText("kor:");
+
+        labelStatusWorkHours.setText("mióta dolgozik:");
 
         jLabel9.setText("Fiúk");
+
+        comboBoxGirls.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                comboBoxGirlsItemStateChanged(evt);
+            }
+        });
+
+        comboBoxBoys.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                comboBoxBoysItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -89,13 +166,13 @@ public class Dolgozok extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel6))
+                    .addComponent(labelSumAge)
+                    .addComponent(labelOldest)
+                    .addComponent(labelOldWorker))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCheckBox1))
+                    .addComponent(buttonSave, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(checkBoxAllGnders))
                 .addGap(30, 30, 30))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -104,24 +181,24 @@ public class Dolgozok extends javax.swing.JFrame {
                         .addComponent(jLabel3))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(jRadioButton1)
+                        .addComponent(radioButtonGirl)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jRadioButton2))
+                        .addComponent(radioButtonBoy))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(comboBoxGirls, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8)
+                    .addComponent(labelStatusWorkHours)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel9)
                             .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel7))
+                        .addComponent(comboBoxBoys, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(labelStatusAge))
                 .addGap(20, 20, 20))
         );
         layout.setVerticalGroup(
@@ -131,42 +208,128 @@ public class Dolgozok extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(jLabel1)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboBoxGirls, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboBoxBoys, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2)
-                    .addComponent(jLabel7))
+                    .addComponent(radioButtonGirl)
+                    .addComponent(radioButtonBoy)
+                    .addComponent(labelStatusAge))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8)
+                .addComponent(labelStatusWorkHours)
                 .addGap(4, 4, 4)
-                .addComponent(jLabel4)
+                .addComponent(labelOldest)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel5)
+                .addComponent(labelSumAge)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jLabel6))
+                    .addComponent(checkBoxAllGnders)
+                    .addComponent(labelOldWorker))
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(buttonSave)
                 .addGap(27, 27, 27))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private int getOldest(char gender)
+    {
+        int oldest = 0;
+        for (Dolgozo dolgozo : dolgozok)
+        {
+            if ((gender == '*' || dolgozo.getGender() == gender) && dolgozo.getAge() > oldest)
+            {
+                oldest = dolgozo.getAge();
+            }
+        }
+        return oldest;
+    }
+    
+    private int getSumAge(char gender)
+    {
+        int sumAge = 0;
+        for (Dolgozo dolgozo : dolgozok)
+        {
+            if (gender == '*' || dolgozo.getGender() == gender)
+            {
+                sumAge += dolgozo.getAge();
+            }
+        }
+        return sumAge;
+    }
+    
+    private String getOldWorker(char gender)
+    {
+        int x = 0;
+        while (x < dolgozok.size() && ((gender != '*' && dolgozok.get(x).getGender() != gender) || dolgozok.get(x).getHoursWorked()< 6))
+        {
+            x++;
+        }
+        if (x < dolgozok.size())
+        {
+            return dolgozok.get(x).getName();
+        }
+        else
+        {
+            return "";
+        }
+    }
+    
+    private void resetSumariseLabels()
+    {
+        labelOldest.setText(DEF_LABEL_OLDEST);
+        labelSumAge.setText(DEF_LABEL_SUM_AGE);
+        labelOldWorker.setText(DEF_LABEL_OLD_WORKER);
+    }
+    
+    private void updateSummariseLabels(char gender)
+    {
+        if (checkBoxAllGnders.isSelected())
+        {
+            gender = GENDER_ALL;
+        }
+        resetSumariseLabels();
+        labelOldest.setText(DEF_LABEL_OLDEST + " " + getOldest(gender));
+        labelSumAge.setText(DEF_LABEL_SUM_AGE + " " + getSumAge(gender));
+        var oldW = getOldWorker(gender);
+        labelOldWorker.setText(DEF_LABEL_OLD_WORKER + " " + ("".equals(oldW)? "nincs": oldW));
+    }
+    
+    private void updateStatus(char gender, int index) {
+        var dolgozo = getDolgozok(gender).get(index);
+        labelStatusAge.setText(DEF_LABEL_STATUS_AGE + " " + dolgozo.getAge());
+        String hoursWorked = dolgozo.getHoursWorked() + " éve";
+        labelStatusWorkHours.setText(DEF_LABEL_STATUS_HOURS_WORKED + " " + hoursWorked);
+    }
+    
+    private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
+        
+    }//GEN-LAST:event_buttonSaveActionPerformed
 
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
+    private void radioButtonBoyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButtonBoyActionPerformed
+        updateSummariseLabels(GENDER_BOY);
+    }//GEN-LAST:event_radioButtonBoyActionPerformed
+
+    private void radioButtonGirlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButtonGirlActionPerformed
+        updateSummariseLabels(GENDER_GIRL);
+    }//GEN-LAST:event_radioButtonGirlActionPerformed
+
+    private void checkBoxAllGndersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxAllGndersActionPerformed
+        updateSummariseLabels(GENDER_ALL);
+    }//GEN-LAST:event_checkBoxAllGndersActionPerformed
+
+    private void comboBoxGirlsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboBoxGirlsItemStateChanged
+        updateStatus(GENDER_GIRL, comboBoxGirls.getSelectedIndex());
+    }//GEN-LAST:event_comboBoxGirlsItemStateChanged
+
+    private void comboBoxBoysItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboBoxBoysItemStateChanged
+        updateStatus(GENDER_BOY, comboBoxBoys.getSelectedIndex());
+    }//GEN-LAST:event_comboBoxBoysItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -204,21 +367,22 @@ public class Dolgozok extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JButton buttonSave;
+    private javax.swing.JCheckBox checkBoxAllGnders;
+    private javax.swing.JComboBox<String> comboBoxBoys;
+    private javax.swing.JComboBox<String> comboBoxGirls;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JLabel labelOldWorker;
+    private javax.swing.JLabel labelOldest;
+    private javax.swing.JLabel labelStatusAge;
+    private javax.swing.JLabel labelStatusWorkHours;
+    private javax.swing.JLabel labelSumAge;
     private javax.swing.ButtonGroup nemek;
+    private javax.swing.JRadioButton radioButtonBoy;
+    private javax.swing.JRadioButton radioButtonGirl;
     // End of variables declaration//GEN-END:variables
+
 }

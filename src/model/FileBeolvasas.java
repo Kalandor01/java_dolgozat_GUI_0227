@@ -2,20 +2,24 @@ package model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class FileBeolvasas {
     
     private static final String FILE_LINE_SEP = ";";
+    private static final String FILE_PATH = "emberek.txt";
     
-    public void Beolvas() throws FileNotFoundException
+    public List<Dolgozo> Beolvas() throws FileNotFoundException
     {
-        var file = new File("emberek.txt");
+        var file = new File(FILE_PATH);
         var sc = new Scanner(file);
         if (sc.hasNextLine())
         {
             sc.nextLine();
         }
+        var dolgozok = new ArrayList<Dolgozo>();
         while (sc.hasNextLine())
         {
             String line = sc.nextLine();
@@ -28,8 +32,9 @@ public class FileBeolvasas {
             {
                 hoursWorked = Integer.parseInt(lineSplit[3]);
             }
-            System.out.println(name + ", " + age + ", " + gender + ", " + hoursWorked);
+            dolgozok.add(new Dolgozo(name, age, gender, hoursWorked));
         }
+        return dolgozok;
     }
     
     

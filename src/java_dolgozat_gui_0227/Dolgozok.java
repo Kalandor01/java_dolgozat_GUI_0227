@@ -42,6 +42,7 @@ public class Dolgozok extends javax.swing.JFrame {
         jComboBox2 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Dolgozók");
 
         jButton1.setText("Ment");
         jButton1.addActionListener(new java.awt.event.ActionListener() {

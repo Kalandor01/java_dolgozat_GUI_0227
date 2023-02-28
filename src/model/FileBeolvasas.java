@@ -1,10 +1,10 @@
 package model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class FileBeolvasas {
     
@@ -13,19 +13,12 @@ public class FileBeolvasas {
     
     public static List<Dolgozo> beolvas()
     {
-        var file = new File(FILE_PATH);
         try
         {
-            var sc = new Scanner(file);
-            if (sc.hasNextLine())
-            {
-                sc.nextLine();
-            }
+            var lines = Files.readAllLines(Paths.get(FILE_PATH));
             var dolgozok = new ArrayList<Dolgozo>();
-            while (sc.hasNextLine())
-            {
-                String line = sc.nextLine();
-                var lineSplit = line.split(FILE_LINE_SEP);
+            for (int x = 1; x < lines.size(); x++) {
+                var lineSplit = lines.get(x).split(FILE_LINE_SEP);
                 String name = lineSplit[0];
                 int age = Integer.parseInt(lineSplit[1]);
                 char gender = lineSplit[2].charAt(0);
@@ -38,7 +31,7 @@ public class FileBeolvasas {
             }
             return dolgozok;
         }
-        catch (FileNotFoundException e)
+        catch (IOException e)
         {
             return null;
         }

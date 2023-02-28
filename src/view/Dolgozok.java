@@ -2,8 +2,14 @@
  */
 package view;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Dolgozo;
 import model.FileBeolvasas;
 
@@ -12,6 +18,7 @@ import model.FileBeolvasas;
  * @author rohovszky.akos
  */
 public class Dolgozok extends javax.swing.JFrame {
+    private static boolean LOADING_GENDER_LISTS = true;
 
     private static final char GENDER_GIRL = 'L';
     private static final char GENDER_BOY = 'F';
@@ -23,6 +30,8 @@ public class Dolgozok extends javax.swing.JFrame {
     
     private static final String DEF_LABEL_STATUS_AGE = "kor:";
     private static final String DEF_LABEL_STATUS_HOURS_WORKED = "mióta dolgozik:";
+    
+    private static final String DOLGOZOK_FILE_PATH = "dolgozok.txt";
     
     private List<Dolgozo> dolgozok;
     
@@ -68,6 +77,9 @@ public class Dolgozok extends javax.swing.JFrame {
         for (String dolgBoy : dolgBoys) {
             comboBoxBoys.addItem(dolgBoy);
         }
+        comboBoxBoys.setSelectedIndex(-1);
+        comboBoxGirls.setSelectedIndex(-1);
+        LOADING_GENDER_LISTS = false;
     }
 
     /**
@@ -301,14 +313,88 @@ public class Dolgozok extends javax.swing.JFrame {
     }
     
     private void updateStatus(char gender, int index) {
-        var dolgozo = getDolgozok(gender).get(index);
-        labelStatusAge.setText(DEF_LABEL_STATUS_AGE + " " + dolgozo.getAge());
-        String hoursWorked = dolgozo.getHoursWorked() + " éve";
-        labelStatusWorkHours.setText(DEF_LABEL_STATUS_HOURS_WORKED + " " + hoursWorked);
+        if (index > -1 && !LOADING_GENDER_LISTS)
+        {
+            var dolgozo = getDolgozok(gender).get(index);
+            labelStatusAge.setText(DEF_LABEL_STATUS_AGE + " " + dolgozo.getAge());
+            String hoursWorked = dolgozo.getHoursWorked() + " éve";
+            labelStatusWorkHours.setText(DEF_LABEL_STATUS_HOURS_WORKED + " " + hoursWorked);
+        }
+    }
+    
+    private FileWriter createSumarisedFile() throws IOException {
+        try {
+            var file = new File(DOLGOZOK_FILE_PATH);
+            if (file.exists())
+            {
+                file.delete();
+            }
+            file.createNewFile();
+            var writer = new FileWriter(file);
+            return writer;
+        } catch (FileNotFoundException ex) { }
+        return null;
+    }
+    
+    private void writeSumarisedToFile(FileWriter file, char gender) throws IOException {
+        var genderName = getGenderName(gender);
+        var text = new StringBuilder();
+        text.append(genderName).append(":\n");
+        text.append(DEF_LABEL_OLDEST + " " + getOldest(gender) + "\n");
+        text.append(DEF_LABEL_SUM_AGE + " " + getSumAge(gender) + "\n");
+        text.append(DEF_LABEL_OLD_WORKER + " " + getOldWorker(gender) + "\n");
+        file.write(text.toString());
+    }
+    
+    private String getGenderName(char gender)
+    {
+        return switch (gender) {
+            case GENDER_BOY -> "Fiú";
+            case GENDER_GIRL -> "Lány";
+            case GENDER_ALL -> "Mind";
+            default -> "";
+        };
+    }
+    
+    private void writeGenderSumarisedToFile(char gender) throws IOException {
+        var file = createSumarisedFile();
+        if (file != null)
+        {
+            if (gender == GENDER_ALL)
+            {
+                writeSumarisedToFile(file, GENDER_BOY);
+                writeSumarisedToFile(file, GENDER_GIRL);
+            }
+            else
+            {
+                writeSumarisedToFile(file, gender);
+            }
+        }
+        file.close();
     }
     
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-        
+        char gender = 0;
+        if (checkBoxAllGnders.isSelected())
+        {
+            gender = GENDER_ALL;
+        }
+        else if (radioButtonBoy.isSelected())
+        {
+            gender = GENDER_BOY;
+        }
+        else if (radioButtonGirl.isSelected())
+        {
+            gender = GENDER_GIRL;
+        }
+        if (gender != 0)
+        {
+            try {
+                writeGenderSumarisedToFile(gender);
+            } catch (IOException ex) {
+                Logger.getLogger(Dolgozok.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void radioButtonBoyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButtonBoyActionPerformed
@@ -384,5 +470,4 @@ public class Dolgozok extends javax.swing.JFrame {
     private javax.swing.JRadioButton radioButtonBoy;
     private javax.swing.JRadioButton radioButtonGirl;
     // End of variables declaration//GEN-END:variables
-
 }
